@@ -4,7 +4,10 @@ const User = require('../models/User');
 
 //Encrypts the user's password, adds the user to the database
 exports.signupUser = (req,res,next)=>{
-    bcrypt.hash(req.body.password , 10)
+    //validate the email address
+    const mailFormat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    if(mailFormat.test(req.body.email)){
+        bcrypt.hash(req.body.password , 10)
         .then(hash =>{
             const user = new User({
                 email : req.body.email,
@@ -15,6 +18,10 @@ exports.signupUser = (req,res,next)=>{
                 .catch(error => res.status(400).json({error}));
         })
         .catch(error => res.status(500).json({error}));
+    }
+    else{
+        alert("Adresse e-mail invalide!");
+    }
 };
 
 /**
@@ -22,7 +29,9 @@ exports.signupUser = (req,res,next)=>{
 database and a signed JSON web token (also containing the userID)
  */
 exports.loginUser =(req,res,next)=>{
-    User.findOne({email : req.body.email})
+    const mailFormat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    if(mailFormat.test(req.body.email)){
+        User.findOne({email : req.body.email})
         .then(user => {
             if(!user){
                 return res.status(401).json({error : 'utilisateur non trouvé !'});
@@ -43,4 +52,8 @@ exports.loginUser =(req,res,next)=>{
                 .catch(error => res.status(500).json({error}));
         })
         .catch(error => res.status(500).json({error}));
+    }
+    else{
+        alert("Adresse e-mail invalide!");
+    }
 };
