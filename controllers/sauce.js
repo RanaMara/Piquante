@@ -71,27 +71,36 @@ exports.likeSauce = (req,res,next)=>{
     const like = JSON.parse(req.body.like);
     Sauce.findOne({_id : req.params.id})
     .then(sauce=>{
-        if (like == 1){
+        if (like == 1){ // if like = 1 the user like the sauce
             if (!sauce.usersLiked.includes(req.body.userId)){
                 sauce.usersLiked.push(req.body.userId);
+                sauce.likes++;
             }
-            res.status(200).json({message : 'L`utilisateur aime la sauce'});
         }
-        else if (like == -1){
+        else if (like == -1){  // if like = -1 the user dislike the sauce
             if (!sauce.usersDisliked.includes(req.body.userId)){
                 sauce.usersDisliked.push(req.body.userId);
+                sauce.dislikes++;
             }
-            res.status(200).json({message : 'L`utilisateur n`aime pas la sauce'});
         }
-        else if (like == 0){
+        else if (like == 0){ // if like = 0 the user change his mind 
             if(sauce.usersLiked.includes(req.body.userId)){
                 sauce.usersLiked.splice(sauce.usersLiked.indexOf(req.body.userId),1);
+                sauce.likes--;
             }
             else if(sauce.usersDisliked.includes(req.body.userId)){
                 sauce.usersDisliked.splice(sauce.usersDisliked.indexOf(req.body.userId),1);
+                sauce.dislikes--;
             }
-            res.status(200).json({message : 'L`utilisateur change son avis'});
         }
+        Sauce.updateOne({_id : sauce._id},{$set:{
+            usersLiked:sauce.usersLiked ,
+            usersDisliked : sauce.usersDisliked ,
+            likes : sauce.likes , 
+            dislikes : sauce.dislikes}
+        })
+        .then(()=> res.status(200).json({ message : 'L`utilisateur a donnée son avis'}))
+        .catch(error => res.status(400).json({error}));
     })
     .catch(error => res.status(500).json({error}));
 }
