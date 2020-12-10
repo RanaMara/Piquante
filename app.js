@@ -9,9 +9,8 @@ const User = require('./models/User');
 const Sauce = require('./models/Sauce');
 const path = require('path');
 
-const app = express();
-
-mongoose.connect('mongodb+srv://user1:12345678910@cluster0.5vbdr.mongodb.net/test?retryWrites=true&w=majority',{ 
+const app = express(); 
+mongoose.connect(/*you have to add the mongodb setting here between the quotation mark*/'',{ 
     useNewUrlParser: true,
     useUnifiedTopology: true 
 })

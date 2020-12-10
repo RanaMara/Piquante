@@ -1,5 +1,6 @@
 const Sauce = require('../models/Sauce');
 const fs = require('fs');
+var specialCharacter=/[*|\":<>[\]{}`\\()';@&$]/;
 
 //Returns the array of all the sauces in the database
 exports.getSauce = (req,res,next)=>{
@@ -22,7 +23,6 @@ sauces to 0, and usersliked and usersdisliked sauces to empty arrays.
  */
 exports.addSauce = (req,res,next)=>{
     const sauceObject = JSON.parse(req.body.sauce);
-    var specialCharacter=/[*|\":<>[\]{}`\\()';@&$]/;
     delete sauceObject._id;
     const sauce = new Sauce({
       ...sauceObject,
@@ -32,10 +32,9 @@ exports.addSauce = (req,res,next)=>{
       usersLiked : [],
       usersDisliked : []
     });
-    console.log(sauce.imageUrl);
     if (specialCharacter.test(sauce.name) || specialCharacter.test(sauce.manufacturer) || specialCharacter.test(sauce.description) || specialCharacter.test(sauce.mainPepper)){ 
-        res.status(500);
-        res.json({error : "vous ne pouvez pas utiliser de caractère spécial"});
+        res.status(401);
+        res.json({message : "vous ne pouvez pas utiliser de caractère spécial"});
     }
     else{
      sauce.save()
@@ -54,9 +53,15 @@ exports.modifySauce = (req,res,next)=>{
     { ...JSON.parse(req.body.sauce),
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}` 
     } :{ ...req.body };
-    Sauce.updateOne({_id : req.params.id} , { ...sauceObject , _id:req.params.id })
-    .then(() => res.status(200).json({ message : 'La sauce est modifié !'}))
-    .catch(error => res.status(400).json({error}));
+    if (specialCharacter.test(sauceObject.name) || specialCharacter.test(sauceObject.manufacturer) || specialCharacter.test(sauceObject.description) || specialCharacter.test(sauceObject.mainPepper)){ 
+        res.status(401);
+        res.json({message : "Vous ne pouvez pas modifier la sauce , vous ne pouvez pas utiliser de caractère spécial"});
+    }
+    else{
+        Sauce.updateOne({_id : req.params.id} , { ...sauceObject , _id:req.params.id })
+        .then(() => res.status(200).json({ message : 'La sauce est modifié !'}))
+        .catch(error => res.status(400).json({error}));
+    }
 
 }
 
