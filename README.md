@@ -14,7 +14,7 @@ dans le terminal:
 
 Pour la partie backend, dans le terminal (nouvelle fenetre):
 
-    1 - git clone https://github.com/RanaMara/Peckocko.git backend
+    1 - git clone https://github.com/RanaMara/Piquante.git backend
     2 - cd backend 
     3 - npm install
     4 - nodemon server 
