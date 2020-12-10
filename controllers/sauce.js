@@ -22,6 +22,7 @@ sauces to 0, and usersliked and usersdisliked sauces to empty arrays.
  */
 exports.addSauce = (req,res,next)=>{
     const sauceObject = JSON.parse(req.body.sauce);
+    var specialCharacter=/[*|\":<>[\]{}`\\()';@&$]/;
     delete sauceObject._id;
     const sauce = new Sauce({
       ...sauceObject,
@@ -31,9 +32,16 @@ exports.addSauce = (req,res,next)=>{
       usersLiked : [],
       usersDisliked : []
     });
-    sauce.save()
+    console.log(sauce.imageUrl);
+    if (specialCharacter.test(sauce.name) || specialCharacter.test(sauce.manufacturer) || specialCharacter.test(sauce.description) || specialCharacter.test(sauce.mainPepper)){ 
+        res.status(500);
+        res.json({error : "vous ne pouvez pas utiliser de caractère spécial"});
+    }
+    else{
+     sauce.save()
       .then(() => res.status(201).json({ message: 'Objet enregistré !'}))
       .catch(error => res.status(400).json({ error }));
+    }
 }
 
 /**
