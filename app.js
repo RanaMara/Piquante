@@ -1,16 +1,20 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const helmet = require('helmet');
-
+require('dotenv').config();
+const helmet = require('helmet');  //to avoid cookie xss attacks for the HttpOnly flag
+const xss = require('xss-clean');
 const userRouters = require('./routes/user');
 const sauceRouters = require('./routes/sauce');
 const User = require('./models/User');
 const Sauce = require('./models/Sauce');
 const path = require('path');
 
-const app = express(); 
-mongoose.connect(/*you have to add the mongodb setting here between the quotation mark*/'',{ 
+
+
+const app = express();
+
+mongoose.connect(process.env.CONNECT_TO_DATABASE,{ 
     useNewUrlParser: true,
     useUnifiedTopology: true 
 })
@@ -31,6 +35,7 @@ app.use((req, res, next) => {
 });
 
 app.use(bodyParser.json());
+app.use(xss());
 app.use(helmet());
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/api/auth' , userRouters); 
