@@ -17,8 +17,10 @@ Pour la partie backend, dans le terminal (nouvelle fenetre):
     1 - git clone https://github.com/RanaMara/Piquante.git backend
     2 - cd backend 
     3 - créer un fichier ".env" et y mettre le contenu du fichier "env.txt" qui existe dans le livrable
-         touch .env
-         open .env
+
+          touch .env
+          open .env
+          
     4 - npm install
     5 - nodemon server 
   
